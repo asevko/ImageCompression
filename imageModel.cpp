@@ -162,7 +162,7 @@ int ImageModel::convertRGBToImg(double color) {
 double ImageModel::getErrorDegree(Matrix deltaX) {
     double e = 0;
     for (int i = 0; i < nmRGB; i++) {
-        e += pow(deltaX.getValue(0, i), 2);
+        e += (deltaX.getValue(0, i) * deltaX.getValue(0, i));
     }
     return e;
 }

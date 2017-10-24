@@ -8,15 +8,6 @@ Matrix::Matrix(vector<double> vector) {
     for (int i = 0; i < m; i++) {
         matrix[0][i] = vector.at(i);
     }
-//    this->n = (int)vector.size();
-//    this->m = 1;
-//    matrix = new double* [n];
-//    for (int i = 0; i < n; i++) {
-//        matrix[i] = new double [m];
-//    }
-//    for (int i = 0; i < m; i++) {
-//        matrix[i][0] = vector.at(i);
-//    }
 }
 
 Matrix::Matrix(int n, int m) {
@@ -50,11 +41,11 @@ Matrix::Matrix(int n, int m, bool random){
     for (int i = 0; i < n; i++) {
         matrix[i] = new double [m];
     }
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            matrix[i][j] = ((double) rand() / (RAND_MAX));
-        }
-    }
+//    for (int i = 0; i < n; i++) {
+//        for (int j = 0; j < m; j++) {
+//            matrix[i][j] = ((double) rand() / (RAND_MAX));
+//        }
+//    }
 }
 
 Matrix::~Matrix() {

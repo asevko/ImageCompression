@@ -13,6 +13,7 @@ private:
     int startX;
     int startY;
     vector<double> vectorX;
+private:
     Matrix X;
 public:
     RectangleModel(int, int);
@@ -20,12 +21,7 @@ public:
     void createMatrixX();
     void addElement(double);
     int getStartX();
-    void setStartX(int);
     int getStartY();
-    void setStartY(int);
-    vector<double> getVectorX();
-    void setVectorX(vector<double>&);
-    void setX(Matrix);
     Matrix getX();
 };
 

@@ -24,27 +24,8 @@ int RectangleModel::getStartX() {
 int RectangleModel::getStartY() {
     return  this->startY;
 }
-//
-//void RectangleModel::setStartX(int startX) {
-//    this->startX = startX;
-//}
-//
-//void RectangleModel::setStartY(int startY) {
-//    this->startY = startY;
-//}
-//
-//vector<double> RectangleModel::getVectorX() {
-//    return this->vectorX;
-//}
-//
-//void RectangleModel::setVectorX(vector<double> &vectorX) {
-//    this->vectorX = vectorX;
-//}
 
 Matrix RectangleModel::getX() {
     return this->X;
 }
-//
-//void RectangleModel::setX(Matrix X) {
-//    this->X = X;
-//}
+
