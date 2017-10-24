@@ -15,7 +15,7 @@ cin >> a;
 }
 
 ImageModel::ImageModel(char const *path) {
-    Mat image = imread(path, CV_LOAD_IMAGE_COLOR);
+    cv::Mat image = imread(path, CV_LOAD_IMAGE_COLOR);
     init();
     iWidth = image.size().width;
     iHeight = image.size().height;
@@ -45,20 +45,20 @@ ImageModel::ImageModel(char const *path) {
 }
 
 void ImageModel::createOutputImage() {
-    Mat image(iWidth, iHeight, CV_8UC3);
+    cv::Mat image(iWidth, iHeight, CV_8UC3);
     float color[3];
     for (int index = 0; index < L; index++){
         int startX = rectangles[index].getStartX();
         int startY = rectangles[index].getStartY();
-        Matrix X = rectangles[index].getX();
-        Matrix Y = X * W;
-        Matrix X_ = Y * W_;
+        mat X = rectangles[index].getX();
+        mat Y = X * W;
+        mat X_ = Y * W_;
         int pixel = 0;
         for (int i = startX; i < m + startX; i++) {
             for (int j = startY; j < n + startY; j++) {
-                color[0] = convertRGBToImg(X_.getValue(0, pixel++));
-                color[1] = convertRGBToImg(X_.getValue(0, pixel++));
-                color[2] = convertRGBToImg(X_.getValue(0, pixel++));
+                color[0] = convertRGBToImg(X_(0, pixel++));
+                color[1] = convertRGBToImg(X_(0, pixel++));
+                color[2] = convertRGBToImg(X_(0, pixel++));
                 if (i < iWidth && j < iHeight){
                     image.at<Vec3b>(i, j)[0] = static_cast<uchar>(color[0]);
                     image.at<Vec3b>(i, j)[1] = static_cast<uchar>(color[1]);
@@ -80,27 +80,25 @@ void ImageModel::run() {
     do {
         E = 0;
         for (int index = 0; index < L; index++){
-            Matrix X = rectangles[index].getX();
-            Matrix Y = X * W;
-            Matrix X_ = Y * W_;
-            Matrix deltaX = X_ - X;
+            mat X = rectangles[index].getX();
+            mat Y = X * W;
+            mat X_ = Y * W_;
+            mat deltaX = X_ - X;
             if (a) {
                 step_ = step = a;
             } else {
                 step_ = adaptiveLearningStep(Y);
                 step = adaptiveLearningStep(X);
             }
-            Matrix temp = X.transpose() * step;
-            W = W - (temp * deltaX * W_.transpose()); ///обучение нейронов первого слоя
-            temp = Y.transpose() * step_;
-            W_ = W_ - (temp * deltaX); ///корректировка весов нейронов на втором слое
+            W = W - (step * X.t() * deltaX * W_.t()); ///обучение нейронов первого слоя
+            W_ = W_ - (step_ * Y.t()  * deltaX); ///корректировка весов нейронов на втором слое
             normalizeMatrixes();
         }
         for (int index = 0; index < L; index++){
-            Matrix X = rectangles[index].getX();
-            Matrix Y = X * W;
-            Matrix X_ = Y * W_;
-            Matrix deltaX = X_ - X;
+            mat X = rectangles[index].getX();
+            mat Y = X * W;
+            mat X_ = Y * W_;
+            mat deltaX = X_ - X;
             E += getErrorDegree(deltaX);
         }
         iteration++;
@@ -111,12 +109,12 @@ void ImageModel::run() {
 }
 
 
-double ImageModel::adaptiveLearningStep(Matrix matrix) {
-    Matrix temp = (matrix * matrix.transpose());
+double ImageModel::adaptiveLearningStep(mat matrix) {
+    mat temp = (matrix * matrix.t());
     double sum = 50;
-    for (unsigned int i = 0; i < temp.getN(); i++) {
-        for (unsigned int j = 0; j < temp.getM(); j++) {
-            sum += temp.getValue(i,j);
+    for (unsigned int i = 0; i < temp.n_rows; i++) {
+        for (unsigned int j = 0; j < temp.n_cols; j++) {
+            sum += temp(i,j);
         }
     }
     return  1.0 / sum;
@@ -127,18 +125,15 @@ void ImageModel::normalizeMatrixes() {
     normalizeMatrix(W_);
 }
 
-void ImageModel::normalizeMatrix(Matrix matrix) {
-    int cols = matrix.getM();
-    int rows = matrix.getN();
-    for (unsigned int i = 0; i < cols; i ++) {
+void ImageModel::normalizeMatrix(mat matrix) {
+    for (unsigned int i = 0; i < matrix.n_cols; i ++) {
         double sum = 0;
-        for (unsigned int j = 0; j < rows; j++) {
-            sum += (matrix.getValue(j, i) * matrix.getValue(j, i));
+        for (unsigned int j = 0; j < matrix.n_rows; j++) {
+            sum += pow(matrix(j, i), 2);
         }
         sum = sqrt(sum);
-        for (unsigned int j = 0; j < rows; j++) {
-            double newValue = matrix.getValue(j, i) / sum;
-            matrix.changeValue(j, i, newValue);
+        for (unsigned int j = 0; j < matrix.n_rows; j++) {
+            matrix(j, i) = matrix(j, i) / sum;
         }
     }
 }
@@ -159,22 +154,21 @@ int ImageModel::convertRGBToImg(double color) {
     return (int)ans;
 }
 
-double ImageModel::getErrorDegree(Matrix deltaX) {
+double ImageModel::getErrorDegree(mat deltaX) {
     double e = 0;
     for (int i = 0; i < nmRGB; i++) {
-        e += (deltaX.getValue(0, i) * deltaX.getValue(0, i));
+        e += (deltaX(0, i) * deltaX(0, i));
     }
     return e;
 }
 
 void ImageModel::createWeightMatrix() {
     srand(time(NULL));
-    W = Matrix(nmRGB, p, true);
+    W = randu<mat>(nmRGB,p);
     for (int i = 0; i < nmRGB; i++) {
         for (int j = 0; j < p; j++) {
-            double newValue = (((double)rand() / RAND_MAX)*2 - 1 )*0.1;;
-            W.changeValue(i, j, newValue);
+            W(i,j) = (((double)rand() / RAND_MAX)*2 - 1 )*0.1;;
         }
     }
-    W_ = W.transpose();
+    W_ = W.t();
 }

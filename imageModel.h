@@ -3,9 +3,11 @@
 
 #include <iostream>
 #include "rectangleModel.h"
+#include <armadillo>
 
 using namespace std;
 using namespace cv;
+using namespace arma;
 
 class ImageModel {
 private:
@@ -19,16 +21,16 @@ private:
     int nmRGB;
     double e; ///максимально допустимая ошибка
     double a; ///адаптивный шаг обучения
-    Matrix W; ///матрица весов
-    Matrix W_;
+    mat W; ///матрица весов
+    mat W_;
     vector<RectangleModel> rectangles; ///список всех прямоугольников, на которые разбита картинка
     double convertColor(int color);
     int convertRGBToImg(double color);
-    double getErrorDegree(Matrix deltaX);
+    double getErrorDegree(mat deltaX);
     void createWeightMatrix();
-    void normalizeMatrix(Matrix matrix);
+    void normalizeMatrix(mat matrix);
     void normalizeMatrixes();
-    double adaptiveLearningStep(Matrix matrix);
+    double adaptiveLearningStep(mat matrix);
 public:
     explicit ImageModel(char const * path);
     void init();

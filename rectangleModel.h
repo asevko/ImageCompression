@@ -2,11 +2,12 @@
 #define IMAGECOMPRESSION_RECTANGLEMODEL_H
 
 #include <vector>
-#include "matrix.h"
+#include <armadillo>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 using namespace std;
+using  namespace arma;
 
 class RectangleModel {
 private:
@@ -14,7 +15,7 @@ private:
     int startY;
     vector<double> vectorX;
 private:
-    Matrix X;
+    mat X;
 public:
     RectangleModel(int, int);
     ~RectangleModel();
@@ -22,7 +23,7 @@ public:
     void addElement(double);
     int getStartX();
     int getStartY();
-    Matrix getX();
+    mat getX();
 };
 
 

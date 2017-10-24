@@ -10,7 +10,7 @@ RectangleModel::~RectangleModel() {
 }
 
 void RectangleModel::createMatrixX() {
-    X = Matrix(vectorX); //deleted .transpose()
+    X = mat(vectorX).t(); //deleted .transpose()
 }
 
 void RectangleModel::addElement(double newElement) {
@@ -25,7 +25,7 @@ int RectangleModel::getStartY() {
     return  this->startY;
 }
 
-Matrix RectangleModel::getX() {
+mat RectangleModel::getX() {
     return this->X;
 }
 
