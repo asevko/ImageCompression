@@ -6,8 +6,8 @@ int main(int argc, char** argv) {
 //        exit(1);
 //    }
     //srcImg = strdup(argv[1]);
-    srcImg ="/Users/alexeisevko/CLionProjects/ImageCompression/256px-Lenna.png";
-    //srcImg ="/Users/alexeisevko/CLionProjects/ImageCompression/test1.png";
+    // srcImg ="/Users/alexeisevko/CLionProjects/ImageCompression/256px-Lenna.png";
+   srcImg ="/Users/alexeisevko/CLionProjects/ImageCompression/1024.png";
     //srcImg ="/Users/alexeisevko/CLionProjects/ImageCompression/test3.bmp";
     ImageModel model(srcImg);
     model.run();
