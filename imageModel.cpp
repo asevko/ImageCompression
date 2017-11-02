@@ -71,6 +71,43 @@ void ImageModel::createOutputImage() {
 //    imwrite("/Users/alexeisevko/CLionProjects/ImageCompression/output.bmp", image);
 }
 
+void ImageModel::compressedImage() {
+    int width, height, count;
+    width = height = (int)sqrt(p/3);
+    count = iHeight / n;
+    cv::Mat image(height * count, width * count, CV_8UC3);
+    float color[3];
+    mat X;
+    mat Y;
+    int startX = 0;
+    int startY = 0;
+    for (auto rectangle : rectangles) {
+        X = rectangle.getX();
+        Y = X * W;
+        int pixel = 0;
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                color[0] = convertRGBToImg(Y(0, pixel++));
+                color[1] = convertRGBToImg(Y(0, pixel++));
+                color[2] = convertRGBToImg(Y(0, pixel++));
+                int x = startX + i;
+                int y = startY + j;
+                if (x < image.size().height && y < image.size().height) {
+                    image.at<Vec3b>(y, x)[0] = static_cast<uchar>(color[0]);
+                    image.at<Vec3b>(y, x)[1] = static_cast<uchar>(color[1]);
+                    image.at<Vec3b>(y, x)[2] = static_cast<uchar>(color[2]);
+                }
+            }
+        }
+        startX +=width;
+        if (startX >= width*count) {
+            startX = 0;
+            startY+=3;
+        }
+    }
+    imwrite("/Users/alexeisevko/CLionProjects/ImageCompression/compressed.png", image);
+}
+
 void ImageModel::run() {
     double step;
     double step_;
@@ -129,7 +166,7 @@ void ImageModel::normalizeMatrix(mat matrix) {
     for (unsigned int i = 0; i < matrix.n_cols; i ++) {
         double sum = 0;
         for (unsigned int j = 0; j < matrix.n_rows; j++) {
-            sum += pow(matrix(j, i), 2);
+            sum += (matrix(j, i) * matrix(j, i));
         }
         sum = sqrt(sum);
         for (unsigned int j = 0; j < matrix.n_rows; j++) {
